@@ -1,0 +1,7 @@
+<app type="python-app">
+    <frame class="box">
+        <label class="font" id="text" onclick="click">
+            Hello World
+        </label>
+    </frame>
+</app>
