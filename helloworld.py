@@ -9,5 +9,9 @@ with open("helloworld.xml") as AppFile:
 
     data = AppFile.read()
 
+import xml.etree.ElementTree as ET
 
-print(styles.classTags["font"])
+xmlfile = ET.fromstring(data)
+
+
+print(dir(xmlfile))

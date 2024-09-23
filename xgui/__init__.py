@@ -4,6 +4,7 @@
 
 from . import (version as VERSiON)
 from ._class import (COLORS, rgba, Vector2)
-from ._window import (App, ENV)
+from ._window import (App, DEFAULT_COMPONENTS)
 from ._template import (Style, StyleSheets, Element)
+import _components as Components 
 

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <app type="python-app">
     <frame class="box">
         <label class="font" id="text" onclick="click">

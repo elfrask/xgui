@@ -1,5 +1,6 @@
 from ._class import (COLORS, rgba, Vector2)
 import termcolor
+import tkinter
 import os
 
 os.system("color")
@@ -49,16 +50,13 @@ class Style:
                     pass
                 elif hasattr(type_node, "parse"):
                     try:
+                        
                         setattr(self, caption, 
                             type_node.parse(value)
                         )
                     except Exception as err:
                         print(termcolor.colored(f"WARNING: the value of attribute '{i}' of the class '{self.CLASSNAME}' it is not valid", "yellow"))
-
-
                         pass
-
-                    
 
                     pass
                 else:
@@ -108,17 +106,31 @@ class StyleSheets:
     pass
 
 
-
 class Element:
 
-    TagName = "frame"
+    tagName = "frame"
     params = {}
+    parent = None
+    children = []
+    id: str|None = None
+    style: Style
 
 
-    def __init__(self, params={}):
+
+    def __init__(self, params:dict={}, parent=None):
         
-
+        self.params = params
+        self.id = params.get("id", None)
+        # self.children = children
 
         pass
+    def setParent(self, parent):
 
+        self.parent = parent    
+    def addChild(self, child):
+
+        self.children.append(child)
+    def render(self):
+
+        return []
     pass
