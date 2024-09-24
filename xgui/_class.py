@@ -23,6 +23,45 @@ class Vector2:
     def parse(value: float):
 
         return Vector2(value, value)
+    def __add__(self, value):
+
+        return Vector2(
+            self.x + value.x,
+            self.y + value.y
+        )
+    def __sub__(self, value):
+
+        return Vector2(
+            self.x - value.x,
+            self.y - value.y
+        )
+    def __mul__(self, value):
+
+        return Vector2(
+            self.x * value.x,
+            self.y * value.y
+        )
+    def __truediv__(self, value):
+
+        return Vector2(
+            self.x / value.x,
+            self.y / value.y
+        )
+    def __pow__(self, value):
+
+        return Vector2(
+            self.x ** value.x,
+            self.y ** value.y
+        )
+    def __mod__(self, value):
+
+        return Vector2(
+            self.x % value.x,
+            self.y % value.y
+        )
+    def __repr__(self) -> str:
+        return f"Vector2({self.x}, {self.y})"
+    
     pass
 
 class rgba:

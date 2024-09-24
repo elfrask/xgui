@@ -2,6 +2,7 @@ from ._class import (COLORS, rgba, Vector2)
 import termcolor
 import tkinter
 import os
+import xml.etree.ElementTree as ET
 
 os.system("color")
 
@@ -106,6 +107,41 @@ class StyleSheets:
     pass
 
 
+
+class Event:
+    __EVENTS:dict = {}
+    __ELEMENT = None
+
+    def __gen_add(_eventName):
+
+        def _generated(self, *arg, **args):
+            
+            for i in self.__EVENTS.get(_eventName, []):
+                i(*arg, **args)
+
+        return _generated
+
+    def __init__(self, _element) -> None:
+        self.__ELEMENT = _element
+
+        pass
+
+    def bind(self, _event: str):
+
+        def _bind(_func):
+
+            self.__EVENTS[_event] = self.__EVENTS.get(_event, [])
+            self.__EVENTS[_event].append(_func)
+
+            pass
+
+
+        return _bind
+    
+    onClick = __gen_add("click")
+
+    pass
+
 class Element:
 
     tagName = "frame"
@@ -114,6 +150,8 @@ class Element:
     children = []
     id: str|None = None
     style: Style
+    innerText:str = ""
+    events:Event
 
 
 
@@ -121,6 +159,7 @@ class Element:
         
         self.params = params
         self.id = params.get("id", None)
+        self.events = Event(self)
         # self.children = children
 
         pass
@@ -130,7 +169,21 @@ class Element:
     def addChild(self, child):
 
         self.children.append(child)
-    def render(self):
+    def render(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), **_rest):
+
+        
 
         return []
+    def __repr__(self) -> str:
+
+        _params = ""
+
+        for i in self.params:
+
+            _params += _params + f" {i}='{self.params[i]}'"
+            pass
+
+        return f"<{self.tagName} {_params}> ... </{self.tagName}>"
+    
+    
     pass

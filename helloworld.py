@@ -1,4 +1,4 @@
-from xgui import (Style, StyleSheets, App, COLORS)
+from xgui import (Style, StyleSheets, App, COLORS, Components, DEFAULT_COMPONENTS)
 
 
 with open("styles.json") as stylefile:
@@ -9,9 +9,8 @@ with open("helloworld.xml") as AppFile:
 
     data = AppFile.read()
 
-import xml.etree.ElementTree as ET
 
-xmlfile = ET.fromstring(data)
+app = App(DEFAULT_COMPONENTS)
 
-
-print(dir(xmlfile))
+dom = app.build(data, styles, 300, 200, 300, 200)
+print(dom.getTreeBuild())

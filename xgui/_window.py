@@ -11,19 +11,21 @@ DEFAULT_COMPONENTS = {
 class DOM:
 
     root = {}
-    __list_ids = {}
+    __list_ids:{Element} = {}
     __data:ET.Element = {}
     __dist = []
     styleSheets:StyleSheets
     __Components = {}
 
 
-    def __init__(self, data, Components:dict = DEFAULT_COMPONENTS):
-
+    def __init__(self, data: str|io.TextIOWrapper, Components:dict = DEFAULT_COMPONENTS):
+        
         if isinstance(data, io.TextIOWrapper):
             data = data.read()
-
+        
         self.__data = ET.fromstring(data)
+        self.__Components = Components
+        self.update()
 
         pass
 
@@ -31,24 +33,36 @@ class DOM:
 
         self.root = Root
     
-    def update(self):
+    def __compile(self, _DATA:ET.Element, _PARENT: Element = None):
 
-        def _compile(_DATA:ET.Element):
+        NodeComponent = self.__Components.get(_DATA.tag, None)
 
-            Node = self.__Components.get(_DATA.tag, None)
+        if NodeComponent == None:
 
-            if Node == None:
+            raise NameError(f"'{_DATA.tag}' is not a component register")
+        
+        NE: Element = NodeComponent(_DATA.attrib, _PARENT)
+        NE.tagName = _DATA.tag
+        NE.innerText = _DATA.text
 
-                raise NameError(f"'{_DATA.tag}' is not a component register")
+        if "id" in _DATA.attrib.keys():
+            self.__list_ids[child.attrib["id"]] = NE
             
 
-            for child in _DATA:
+        for child in _DATA:
+            
+            NE_child = self.__compile(child)
+            NE.addChild(NE_child)
 
-                pass
+            pass
 
-            return
+        return NE
+
+    def update(self):
+
+        self.__list_ids = {}
         
-        self.__dist = _compile(self.__data)
+        self.__dist = self.__compile(self.__data)
 
         pass
     
@@ -56,6 +70,9 @@ class DOM:
 
         return self.__list_ids.get(id, None)
 
+    def getTreeBuild(self):
+
+        return self.__dist
     pass
 
 class App:
@@ -89,9 +106,9 @@ class App:
 
         
         self.doc = DOM(data, self.__components)
-        self.doc = styleSheets
+        self.__styleSheets = styleSheets
+        self.doc.styleSheets = styleSheets
 
-
-        pass
+        return self.doc
 
     pass
