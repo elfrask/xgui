@@ -1,11 +1,14 @@
 import xml.etree.ElementTree as ET
 import tkinter, io
 from ._template import (StyleSheets, Style, Element)
+from . import _components as COMPONENTS
+from ._class import (parse_class_style)
 
 # from tkinter import (Label)
 
 DEFAULT_COMPONENTS = {
-    **{}
+    "app": COMPONENTS.app,
+    "frame": COMPONENTS.frame
 }
 
 class DOM:
@@ -16,15 +19,17 @@ class DOM:
     __dist = []
     styleSheets:StyleSheets
     __Components = {}
+    __root_engine:tkinter.Tk = None
 
 
-    def __init__(self, data: str|io.TextIOWrapper, Components:dict = DEFAULT_COMPONENTS):
+    def __init__(self, data: str|io.TextIOWrapper, Components:dict = DEFAULT_COMPONENTS, _root = None):
         
         if isinstance(data, io.TextIOWrapper):
             data = data.read()
         
         self.__data = ET.fromstring(data)
         self.__Components = Components
+        self.__root_engine = _root
         self.update()
 
         pass
@@ -41,9 +46,10 @@ class DOM:
 
             raise NameError(f"'{_DATA.tag}' is not a component register")
         
-        NE: Element = NodeComponent(_DATA.attrib, _PARENT)
+        NE: Element = NodeComponent(_DATA.attrib, _PARENT, _DOM = self)
         NE.tagName = _DATA.tag
         NE.innerText = _DATA.text
+        NE.style = parse_class_style(NE.classname,  self.styleSheets)
 
         if "id" in _DATA.attrib.keys():
             self.__list_ids[child.attrib["id"]] = NE
@@ -73,11 +79,14 @@ class DOM:
     def getTreeBuild(self):
 
         return self.__dist
+    
+    
+    
     pass
 
 class App:
 
-    MASTER: tkinter.Tk
+    __MASTER: tkinter.Tk
     doc:DOM
     __styleSheets: StyleSheets
     __x = 0
@@ -87,13 +96,15 @@ class App:
     __height = 100
 
     __data = []
-    __components:{} = {}
+    __components = {}
+    # __root_app: tkinter.Tk
 
 
 
     def __init__(self, COMPONENTS=DEFAULT_COMPONENTS):
 
         self.__components = COMPONENTS
+        self.__MASTER = tkinter.Tk()
         
         pass
     
@@ -105,10 +116,17 @@ class App:
         self.__height = height
 
         
-        self.doc = DOM(data, self.__components)
+        self.doc = DOM(data, self.__components, self.__MASTER)
         self.__styleSheets = styleSheets
         self.doc.styleSheets = styleSheets
 
         return self.doc
+    
+    def run(self, ):
+
+        
+
+        self.__MASTER.mainloop()
+        pass
 
     pass

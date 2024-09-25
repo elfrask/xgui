@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<app type="python-app">
+<app type="xgui">
     <frame class="box">
         <label class="font" id="text" onclick="click">
             Hello World

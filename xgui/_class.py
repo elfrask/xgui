@@ -1,4 +1,4 @@
-
+from ._template import (Element, Style, StyleSheets)
 
 def clamp(value, min, max):
 
@@ -132,3 +132,13 @@ class COLORS:
 
 
     pass
+
+def parse_class_style(class_style: str, _SS: StyleSheets) -> Style:
+
+    _class = class_style.split(" ")
+    _out = Style()
+    for i in _class:
+        if not i in ["", "\t", "\n", "\r"]:
+            _out.set(_SS.getClass(i))
+
+    return _out

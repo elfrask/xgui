@@ -1,37 +1,43 @@
 
 # from typing import Any
+# event = {}
 
+# class add:
 
-event = {}
+#     EVENT = ""
+#     FUNCTION = None
 
-class add:
-
-    EVENT = ""
-    FUNCTION = None
-
-    def __init__(self, _event) -> None:
-        self.EVENT = _event
+#     def __init__(self, _event) -> None:
+#         self.EVENT = _event
         
-        pass
+#         pass
 
-    def __call__(self, _func):
-        self.FUNCTION = _func
+#     def __call__(self, _func):
+#         self.FUNCTION = _func
 
-        event[self.EVENT] = _func
+#         event[self.EVENT] = _func
 
-        return self
+#         return self
 
-    def exec(self, *arg, **args):
+#     def exec(self, *arg, **args):
 
-        return self.FUNCTION(*arg, **args)
+#         return self.FUNCTION(*arg, **args)
 
 
-@add("click")
-def _main():
-    print("Hello World")
-    pass
+# @add("click")
+# def _main():
+#     print("Hello World")
+#     pass
 
-print(event)
-print(_main)
+# print(event)
+# print(_main)
 
-_main.exec()
+# _main.exec()
+
+
+import xml.etree.ElementTree as ET
+
+with open("helloworld.xml") as a:
+    _d = a.read()
+    __d = ET.fromstring(_d)
+    print(__d)

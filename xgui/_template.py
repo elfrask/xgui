@@ -1,4 +1,5 @@
 from ._class import (COLORS, rgba, Vector2)
+from ._window import (DOM, App)
 import termcolor
 import tkinter
 import os
@@ -100,6 +101,10 @@ class StyleSheets:
 
         pass
 
+    def getClass(self, classname:str):
+
+        return self.classTags.get(classname, {})
+
     def __repr__(self) -> str:
 
         return f"StyleSheets: ({ ', '.join(list(self.classTags)) })"
@@ -152,15 +157,26 @@ class Element:
     style: Style
     innerText:str = ""
     events:Event
+    rootDOM: DOM
+    classname = ""
+    __instance_element: tkinter.Widget = None
+    __MASTER: tkinter.Tk
 
 
 
-    def __init__(self, params:dict={}, parent=None):
+    def __init__(self, params:dict={}, parent=None, _MASTER:tkinter.Tk = None, _DOM: DOM = None):
         
         self.params = params
         self.id = params.get("id", None)
+        self.classname = params.get("class", "")
         self.events = Event(self)
+        self.__MASTER = _MASTER
+        self.rootDOM = _DOM
         # self.children = children
+        self.__on_create()
+
+        pass
+    def __ready(self):
 
         pass
     def setParent(self, parent):
@@ -171,7 +187,11 @@ class Element:
         self.children.append(child)
     def render(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), **_rest):
 
-        
+        for i in self.children:
+
+            child: Element = i
+            child.render(_Position + self.style.position, _Size + self.style.size, **_rest)
+            
 
         return []
     def __repr__(self) -> str:
