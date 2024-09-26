@@ -40,4 +40,7 @@ import xml.etree.ElementTree as ET
 with open("helloworld.xml") as a:
     _d = a.read()
     __d = ET.fromstring(_d)
-    print(__d)
+    print(list(__d))
+
+
+

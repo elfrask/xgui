@@ -1,4 +1,5 @@
-from ._template import (Element, Style, StyleSheets)
+# from ._template import (Element, Style, StyleSheets)
+import tkinter
 
 def clamp(value, min, max):
 
@@ -65,10 +66,10 @@ class Vector2:
     pass
 
 class rgba:
-    RED = 0
-    GREEN = 0
-    BLUE = 0
-    ALPHA = 0
+    RED: int = 0
+    GREEN: int = 0
+    BLUE: int = 0
+    ALPHA: float = 0
 
     def __init__(self, red: float, green: float, blue: float, alpha:float = 0.0) -> None:
         
@@ -96,6 +97,10 @@ class rgba:
             return value
 
         return "#" + ti(hex(self.RED)[2:]) + ti(hex(self.GREEN)[2:]) + ti(hex(self.BLUE)[2:]) + ti(hex(int(self.ALPHA * 255))[2:]) 
+
+    def toHex3(self):
+
+        return f'#{self.RED:02x}{self.GREEN:02x}{self.BLUE:02x}'
 
     def totuple(self):
 
@@ -133,12 +138,12 @@ class COLORS:
 
     pass
 
-def parse_class_style(class_style: str, _SS: StyleSheets) -> Style:
 
-    _class = class_style.split(" ")
-    _out = Style()
-    for i in _class:
-        if not i in ["", "\t", "\n", "\r"]:
-            _out.set(_SS.getClass(i))
 
-    return _out
+
+# from ._template import (StyleSheets, Style, Element)
+
+
+# def render(_Obj: tkinter.Widget, _Style: Style, _Element: Element):
+
+#     pass

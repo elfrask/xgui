@@ -1,14 +1,15 @@
 import xml.etree.ElementTree as ET
 import tkinter, io
-from ._template import (StyleSheets, Style, Element)
+from ._template import (StyleSheets, Style, Element, parse_class_style)
 from . import _components as COMPONENTS
-from ._class import (parse_class_style)
+# from ._class import (parse_class_style)
 
 # from tkinter import (Label)
 
 DEFAULT_COMPONENTS = {
     "app": COMPONENTS.app,
-    "frame": COMPONENTS.frame
+    "div": COMPONENTS.frame,
+    "label": COMPONENTS.label
 }
 
 class DOM:
@@ -17,7 +18,7 @@ class DOM:
     __list_ids:{Element} = {}
     __data:ET.Element = {}
     __dist = []
-    styleSheets:StyleSheets
+    styleSheets:StyleSheets = StyleSheets({})
     __Components = {}
     __root_engine:tkinter.Tk = None
 
@@ -30,7 +31,7 @@ class DOM:
         self.__data = ET.fromstring(data)
         self.__Components = Components
         self.__root_engine = _root
-        self.update()
+        # self.update()
 
         pass
 
@@ -47,15 +48,15 @@ class DOM:
             raise NameError(f"'{_DATA.tag}' is not a component register")
         
         NE: Element = NodeComponent(_DATA.attrib, _PARENT, _DOM = self)
-        NE.tagName = _DATA.tag
+        # NE.tagName = _DATA.tag
         NE.innerText = _DATA.text
         NE.style = parse_class_style(NE.classname,  self.styleSheets)
 
         if "id" in _DATA.attrib.keys():
-            self.__list_ids[child.attrib["id"]] = NE
+            self.__list_ids[_DATA.attrib["id"]] = NE
             
-
-        for child in _DATA:
+        _list =  list(_DATA)
+        for child in _list:
             
             NE_child = self.__compile(child)
             NE.addChild(NE_child)
@@ -96,6 +97,9 @@ class App:
     __height = 100
 
     __data = []
+    __title = "untitled"
+    
+
     __components = {}
     # __root_app: tkinter.Tk
 
@@ -117,10 +121,16 @@ class App:
 
         
         self.doc = DOM(data, self.__components, self.__MASTER)
-        self.__styleSheets = styleSheets
         self.doc.styleSheets = styleSheets
+        self.__styleSheets = styleSheets
+
+        self.doc.update()
 
         return self.doc
+    
+    def title(self, title:str):
+
+        self.__title = title
     
     def run(self, ):
 

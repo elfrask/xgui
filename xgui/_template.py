@@ -1,5 +1,5 @@
-from ._class import (COLORS, rgba, Vector2)
-from ._window import (DOM, App)
+from ._class import (COLORS, rgba, Vector2, clamp)
+import importlib
 import termcolor
 import tkinter
 import os
@@ -7,9 +7,26 @@ import xml.etree.ElementTree as ET
 
 os.system("color")
 
+__list_properties = {
+    "size":"size",
+    "position":"position",
+    "positionMode":"position-mode",
+    "backgroundColor": "background-color",
+    "fontFamily": "font-family",
+    "fontSize": "font-size",
+    "fontColor": "font-color",
+    "borderColor":"border-color",
+    "borderWidth":"border-width",
+    "vAlign":"v-align",
+    "hAlign":"h-align",
+    
+}
+
 class Style:
 
     CLASSNAME = ""
+    __dict_style = {}
+    
 
     size: Vector2 = Vector2()
     position: Vector2 = Vector2()
@@ -21,17 +38,22 @@ class Style:
     fontSize: int = 12
     fontColor: rgba = COLORS.BLACK
 
+    borderColor: rgba = COLORS.BLACK
+    borderWidth: int = 0
+
     hAlign = "start"
     vAlign = "start"
 
     def __init__(self, data={}, classname=""):
 
         self.CLASSNAME = classname
-        self.set(data)
+        self.set(data, True)
 
         pass
 
-    def set(self, data={}):
+    def set(self, data={}, __show_logs: bool = False):
+
+        show_logs = __show_logs
 
         for i in data:
 
@@ -56,25 +78,37 @@ class Style:
                         setattr(self, caption, 
                             type_node.parse(value)
                         )
+
+                        self.__dict_style[caption] = value
                     except Exception as err:
-                        print(termcolor.colored(f"WARNING: the value of attribute '{i}' of the class '{self.CLASSNAME}' it is not valid", "yellow"))
+                        if show_logs:
+                            print(termcolor.colored(f"WARNING: the value of attribute '{i}' of the class '{self.CLASSNAME}' it is not valid", "yellow"))
                         pass
 
                     pass
                 else:
-                    print(termcolor.colored(f"WARNING: the value of attribute '{i}' of class '{self.CLASSNAME}' it is not valid", "yellow"))
+                    if show_logs:
+                        print(termcolor.colored(f"WARNING: the value of attribute '{i}' of class '{self.CLASSNAME}' it is not valid", "yellow"))
 
                     pass
 
                 pass
             else:
-                print(termcolor.colored(f"WARNING: the attribute '{i}' of the class '{self.CLASSNAME}' is not a style attribute", "yellow"))
+                if show_logs:
+                    print(termcolor.colored(f"WARNING: the attribute '{i}' of the class '{self.CLASSNAME}' is not a style attribute", "yellow"))
                 pass
 
 
         pass
     def __repr__(self) -> str:
         return f"Style: (name: {self.CLASSNAME})"
+
+    def getObject(self):
+
+        _out = {}
+
+
+        return self.__dict_style
 
     pass    
 
@@ -101,7 +135,7 @@ class StyleSheets:
 
         pass
 
-    def getClass(self, classname:str):
+    def getClass(self, classname:str) -> Style:
 
         return self.classTags.get(classname, {})
 
@@ -144,8 +178,12 @@ class Event:
         return _bind
     
     onClick = __gen_add("click")
+    onChange = __gen_add("change")
 
     pass
+
+
+# importlib.import_module("./_window.py", ".")
 
 class Element:
 
@@ -157,14 +195,15 @@ class Element:
     style: Style
     innerText:str = ""
     events:Event
-    rootDOM: DOM
+    # rootDOM: DOM
+    rootDOM:object = None
     classname = ""
-    __instance_element: tkinter.Widget = None
+    __instance_control: tkinter.Widget = None
     __MASTER: tkinter.Tk
 
 
 
-    def __init__(self, params:dict={}, parent=None, _MASTER:tkinter.Tk = None, _DOM: DOM = None):
+    def __init__(self, params:dict={}, parent=None, _MASTER:tkinter.Tk = None, _DOM = None):
         
         self.params = params
         self.id = params.get("id", None)
@@ -172,11 +211,18 @@ class Element:
         self.events = Event(self)
         self.__MASTER = _MASTER
         self.rootDOM = _DOM
+
+        if isinstance(_DOM, DOM):
+            self.style = parse_class_style(self.classname, self.rootDOM.styleSheets)
+
         # self.children = children
-        self.__on_create()
+        self.__ready()
 
         pass
     def __ready(self):
+
+        pass
+    def __to_render(self, _Widget: tkinter.Widget):
 
         pass
     def setParent(self, parent):
@@ -198,12 +244,30 @@ class Element:
 
         _params = ""
 
-        for i in self.params:
+        _c_params = list(self.params)
 
-            _params += _params + f" {i}='{self.params[i]}'"
+        for i in _c_params:
+
+            _params += f" {i}='{self.params[i]}'"
             pass
-
+        
+        # print(_c_params)
         return f"<{self.tagName} {_params}> ... </{self.tagName}>"
     
     
     pass
+
+
+
+def parse_class_style(class_style: str, _SS:StyleSheets) -> Style:
+    # _SS: StyleSheets = _SS
+
+    _class = class_style.split(" ")
+    _out = Style()
+    for i in _class:
+        if not i in ["", "\t", "\n", "\r"]:
+            _out.set(_SS.getClass(i).getObject())
+
+    return _out
+
+from ._window import (DOM, App)
