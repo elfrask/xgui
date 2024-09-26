@@ -13,4 +13,4 @@ with open("helloworld.xml") as AppFile:
 app = App(DEFAULT_COMPONENTS)
 
 dom = app.build(data, styles, 300, 200, 300, 200)
-print(dom.getTreeBuild())
+print(dom.getTreeBuild().children)
