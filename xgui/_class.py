@@ -65,6 +65,80 @@ class Vector2:
     
     pass
 
+class Cross:
+
+    top:float = 0
+    bottom:float = 0
+    right:float = 0
+    left:float = 0
+
+
+    def __init__(self, top:float = 0, bottom:float = 0, right:float = 0, left:float = 0,) -> None:
+        
+        self.top = top
+        self.bottom = bottom
+        self.right = right
+        self.left = left
+
+        pass
+    def parse(value: float):
+
+        return Cross(value, value, value, value)
+    def __add__(self, value):
+
+        return Cross(
+            self.top + value.top,
+            self.bottom + value.bottom,
+            self.right + value.right,
+            self.left + value.left
+        )
+    def __sub__(self, value):
+
+        return Cross(
+            self.top - value.top,
+            self.bottom - value.bottom,
+            self.right - value.right,
+            self.left - value.left
+        )
+    def __mul__(self, value):
+
+        return Cross(
+            self.top * value.top,
+            self.bottom * value.bottom,
+            self.right * value.right,
+            self.left * value.left
+        )
+    def __truediv__(self, value):
+
+        return Cross(
+            self.top / value.top,
+            self.bottom / value.bottom,
+            self.right / value.right,
+            self.left / value.left
+        )
+    def __pow__(self, value):
+
+        return Cross(
+            self.top ** value.top,
+            self.bottom ** value.bottom,
+            self.right ** value.right,
+            self.left ** value.left
+        )
+    def __mod__(self, value):
+
+        return Cross(
+            self.top % value.top,
+            self.bottom % value.bottom,
+            self.right % value.right,
+            self.left % value.left
+        )
+    def __repr__(self) -> str:
+        return f"Cross({self.top}, {self.bottom}, {self.right}, {self.left})"
+    
+    pass
+
+
+
 class rgba:
     RED: int = 0
     GREEN: int = 0
@@ -106,13 +180,24 @@ class rgba:
 
         return (self.RED, self.GREEN, self.BLUE, self.ALPHA)
     
+    def square(value):
+
+        return Vector2(value, value)
+
     def parse(value):
 
         if isinstance(value, str):
 
             return getattr(COLORS, value.upper())
+        elif isinstance(value, Vector2):
+            
+            return value
+        elif value.__class__ in [int, float]:
+            
+            return Vector2(value, value)
+        
 
-        return
+        raise Exception(f"the value '{value.__class__.__name__}' it's not parsable for Vector2")
 
 class COLORS:
 
@@ -137,6 +222,24 @@ class COLORS:
 
 
     pass
+
+def attrib2dict(obj) -> dict:
+    _out = {}
+    
+    for i in dir(obj):
+
+        if not i[:2] == "__":
+
+            _out[i.lower()] = getattr(obj, i)
+            pass
+
+        pass
+    return _out
+
+DICT_COLORS = attrib2dict(COLORS)
+
+
+
 
 
 

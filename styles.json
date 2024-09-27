@@ -1,7 +1,7 @@
 {
     "box": {
-        "h-align":"center",
-        "v-align":"center",
+        "display":pack,
+        "align":left,
         "background-color": "black",
         "size": Vector2(
             200,

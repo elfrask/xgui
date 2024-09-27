@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <app type="xgui">
-    <div class="box">
-        <label class="font" id="text" onclick="click">
-           
+    <frame class="box">
+        <label class="font" id="text" onclick="click" style.display="none">
+            Hello World!
         </label>
-    </div>
+    </frame>
 </app>

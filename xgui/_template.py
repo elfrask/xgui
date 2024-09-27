@@ -1,26 +1,47 @@
-from ._class import (COLORS, rgba, Vector2, clamp)
+from ._class import (COLORS, rgba, Vector2, clamp, DICT_COLORS, attrib2dict, Cross)
 import importlib
-import termcolor
+from termcolor import (colored as col)
 import tkinter
 import os
 import xml.etree.ElementTree as ET
 
 os.system("color")
 
+
 __list_properties = {
     "size":"size",
     "position":"position",
-    "positionMode":"position-mode",
+    "margin":"margin",
+    "padding":"padding",
+
+    "display":"display",
+
+    # Pack Display Options
+    "align":"align",
+    "expand":"expand",
+    "fill":"fill",
+
+
+
     "backgroundColor": "background-color",
+
     "fontFamily": "font-family",
     "fontSize": "font-size",
     "fontColor": "font-color",
+    
     "borderColor":"border-color",
     "borderWidth":"border-width",
-    "vAlign":"v-align",
-    "hAlign":"h-align",
+    
+    # "hAlign":"h-align",
     
 }
+
+class DISPLAYS:
+
+    PACK = "pack"
+    PLACE = "place"
+    GRID = "grid"
+    NONE = "none"
 
 class Style:
 
@@ -30,8 +51,17 @@ class Style:
 
     size: Vector2 = Vector2()
     position: Vector2 = Vector2()
+    margin: Vector2 = Vector2()
+    padding: Vector2 = Vector2()
+    # padding: Cross = Cross()
     
-    positionMode: str = "relative"
+    display: str = "pack"
+
+    align:str = tkinter.LEFT
+    expand:bool = False
+    fill:str = tkinter.NONE
+    # vAlign = "start"
+
     backgroundColor: rgba = COLORS.WHITE
 
     fontFamily: str = "Arial"
@@ -41,12 +71,11 @@ class Style:
     borderColor: rgba = COLORS.BLACK
     borderWidth: int = 0
 
-    hAlign = "start"
-    vAlign = "start"
 
     def __init__(self, data={}, classname=""):
 
         self.CLASSNAME = classname
+        self.__dict_style = {}
         self.set(data, True)
 
         pass
@@ -82,48 +111,79 @@ class Style:
                         self.__dict_style[caption] = value
                     except Exception as err:
                         if show_logs:
-                            print(termcolor.colored(f"WARNING: the value of attribute '{i}' of the class '{self.CLASSNAME}' it is not valid", "yellow"))
+                            print(col(f"WARNING: the value of attribute '{i}' of the class '{self.CLASSNAME}' it is not valid", "yellow"))
                         pass
 
                     pass
                 else:
                     if show_logs:
-                        print(termcolor.colored(f"WARNING: the value of attribute '{i}' of class '{self.CLASSNAME}' it is not valid", "yellow"))
+                        print(col(f"WARNING: the value of attribute '{i}' of class '{self.CLASSNAME}' it is not valid", "yellow"))
 
                     pass
 
                 pass
             else:
                 if show_logs:
-                    print(termcolor.colored(f"WARNING: the attribute '{i}' of the class '{self.CLASSNAME}' is not a style attribute", "yellow"))
+                    print(col(f"WARNING: the attribute '{i}' of the class '{self.CLASSNAME}' is not a style attribute", "yellow"))
                 pass
 
 
         pass
     def __repr__(self) -> str:
-        return f"Style: (name: {self.CLASSNAME})"
+
+
+        return f"{col('Style', 'light_blue')}: ({col('name', 'light_green')}: {col(self.CLASSNAME, 'yellow')})"
 
     def getObject(self):
 
+        return self.__dict_style
+
+    def getObjectFromStyle(self):
+
         _out = {}
 
+        for i in __list_properties:
 
-        return self.__dict_style
+            _out[__list_properties[i]] = getattr(self, i)
+            pass
+
+        return _out
 
     pass    
 
 class StyleSheets:
 
-    classTags = {
-        
-    }
+    classTags = {}
 
     def __init__(self, data={}) -> None:
 
+        self.classTags = {}
+
         if isinstance(data, str):
             data = eval(data, {
+                # class and functions
                 "rgba": rgba,
-                "Vector2": Vector2
+                "Vector2": Vector2,
+                "Cross": Cross,
+                
+                # constants
+                **DICT_COLORS,
+
+                "left": tkinter.LEFT,
+                "right": tkinter.RIGHT,
+                "top": tkinter.TOP,
+                "bottom": tkinter.BOTTOM,
+                
+                "both": tkinter.BOTH,
+                "none": tkinter.NONE,
+                "x": tkinter.X,
+                "y": tkinter.Y,
+
+                "pack": DISPLAYS.PACK,
+                "place": DISPLAYS.PLACE,
+                "grid": DISPLAYS.GRID,
+
+
             })
             pass
             
@@ -141,7 +201,13 @@ class StyleSheets:
 
     def __repr__(self) -> str:
 
-        return f"StyleSheets: ({ ', '.join(list(self.classTags)) })"
+        _li = []
+
+        for i in self.classTags:
+
+            _li.append(col(i, "yellow"))
+
+        return f"StyleSheets: ({ ', '.join(list(_li)) })"
 
     pass
 
@@ -161,7 +227,9 @@ class Event:
         return _generated
 
     def __init__(self, _element) -> None:
+        self.__EVENTS = {}
         self.__ELEMENT = _element
+
 
         pass
 
@@ -190,16 +258,17 @@ class Element:
     tagName = "frame"
     params = {}
     parent = None
-    children = []
+    children:dict = []
     id: str|None = None
-    style: Style
+    style: Style 
     innerText:str = ""
     events:Event
     # rootDOM: DOM
     rootDOM:object = None
     classname = ""
-    __instance_control: tkinter.Widget = None
-    __MASTER: tkinter.Tk
+    isContainable:bool = False
+    instance_control: tkinter.Widget = None
+    MASTER: tkinter.Tk = None
 
 
 
@@ -209,8 +278,9 @@ class Element:
         self.id = params.get("id", None)
         self.classname = params.get("class", "")
         self.events = Event(self)
-        self.__MASTER = _MASTER
+        self.MASTER = _MASTER
         self.rootDOM = _DOM
+        self.children = []
 
         if isinstance(_DOM, DOM):
             self.style = parse_class_style(self.classname, self.rootDOM.styleSheets)
@@ -222,7 +292,33 @@ class Element:
     def __ready(self):
 
         pass
-    def __to_render(self, _Widget: tkinter.Widget):
+    def display(self, _Widget: tkinter.Widget, _Style: Style):
+
+        _display = _Style.display
+
+        if _display == DISPLAYS.PACK:
+
+            _Widget.pack(
+                side=_Style.align,
+                expand=_Style.expand,
+                fill=_Style.fill,
+
+                padx=_Style.margin.x,
+                pady=_Style.margin.y,
+
+                ipadx=_Style.padding.x,
+                ipady=_Style.padding.y,
+
+                # ipadx=(_Style.padding.right, _Style.padding.left),
+                # ipady=(_Style.padding.top, _Style.padding.bottom)
+
+            )
+
+            pass
+        elif _display == DISPLAYS.NONE:
+
+            pass
+
 
         pass
     def setParent(self, parent):
@@ -239,20 +335,25 @@ class Element:
             child.render(_Position + self.style.position, _Size + self.style.size, **_rest)
             
 
-        return []
+        pass
     def __repr__(self) -> str:
 
         _params = ""
 
         _c_params = list(self.params)
 
-        for i in _c_params:
+        
 
-            _params += f" {i}='{self.params[i]}'"
+        for i in _c_params:
+            _t = '"'
+            _params += f" {col(i, 'light_green')}={ col( _t + self.params[i] + _t, 'yellow') }"
             pass
         
         # print(_c_params)
-        return f"<{self.tagName} {_params}> ... </{self.tagName}>"
+
+        _color_tagname = col(self.tagName, "light_red")
+
+        return f"<{_color_tagname}{_params}> {col('...', 'blue')} </{_color_tagname}>"
     
     
     pass
@@ -269,5 +370,20 @@ def parse_class_style(class_style: str, _SS:StyleSheets) -> Style:
             _out.set(_SS.getClass(i).getObject())
 
     return _out
+
+def get_master(_Element: Element, _Master: tkinter.Tk):
+
+    _out: Element = _Element
+
+    while True:
+        if _out == None:
+            return _Master
+
+        if _out.isContainable:
+            return _out
+        elif not _out.isContainable:
+            _out = _out.parent
+            continue
+
 
 from ._window import (DOM, App)

@@ -1,6 +1,6 @@
 from xgui._class import Vector2
 import tkinter
-from ._template import (Element, parse_class_style)
+from ._template import (Element, parse_class_style, get_master)
 # from ._class import ()
 
 class app(Element):
@@ -8,6 +8,10 @@ class app(Element):
     tagName = "app"
     lang = "en"
     type = "xgui"
+    isContainable = True
+
+    def __init__(self, params: dict = ..., parent=None, _MASTER: tkinter.Tk = None, _DOM=None):
+        super().__init__(params, parent, _MASTER, _DOM)
 
     def __ready(self):
 
@@ -19,9 +23,13 @@ class app(Element):
         
         _st = parse_class_style(self.classname,  self.rootDOM.styleSheets)
 
-        _APP = tkinter.Frame(self.__MASTER)
+        print(self.MASTER)
 
-        self.__instance_control = _APP
+        _APP = tkinter.Frame(self.MASTER,
+            bg=_st.backgroundColor.toHex3()
+        )
+
+        self.instance_control = _APP
     
         _APP.pack(fill=tkinter.BOTH, expand=True)
 
@@ -37,14 +45,17 @@ class app(Element):
 class frame(Element):
 
     tagName = "frame"
+    isContainable = True
 
+    def __init__(self, params: dict = ..., parent=None, _MASTER: tkinter.Tk = None, _DOM=None):
+        super().__init__(params, parent, _MASTER, _DOM)
 
     def render(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), **_rest):
 
-        _st = parse_class_style(self.classname,  self.rootDOM.styleSheets)
-
-        _FRAME = tkinter.Frame(self.__MASTER, 
-            bg=_st.backgroundColor,
+        # _st = parse_class_style(self.classname,  self.rootDOM.styleSheets)
+        _st = self.style
+        _FRAME = tkinter.Frame(get_master(self.parent, self.MASTER), 
+            bg=_st.backgroundColor.toHex3(),
             width=_st.size.x,
             height=_st.size.y
             
@@ -52,7 +63,8 @@ class frame(Element):
 
         
 
-        self.__instance_control = _FRAME
+        self.instance_control = _FRAME
+        self.display(_FRAME, _st)
     
 
 
@@ -70,12 +82,15 @@ class label(Element):
 
     tagName= "label"
 
+    def __init__(self, params: dict = ..., parent=None, _MASTER: tkinter.Tk = None, _DOM=None):
+        super().__init__(params, parent, _MASTER, _DOM)
+
     def render(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), **_rest):
 
         _st = parse_class_style(self.classname,  self.rootDOM.styleSheets)
 
-        _FRAME = tkinter.Frame(self.__MASTER, 
-            bg=_st.backgroundColor,
+        _FRAME = tkinter.Frame(get_master(self.parent, self.MASTER), 
+            bg=_st.backgroundColor.toHex3(),
             width=_st.size.x,
             height=_st.size.y
             
@@ -83,7 +98,7 @@ class label(Element):
 
         
 
-        self.__instance_control = _FRAME
+        self.instance_control = _FRAME
     
 
 

@@ -2,13 +2,14 @@ import xml.etree.ElementTree as ET
 import tkinter, io
 from ._template import (StyleSheets, Style, Element, parse_class_style)
 from . import _components as COMPONENTS
+from ._class import (Vector2)
 # from ._class import (parse_class_style)
 
 # from tkinter import (Label)
 
 DEFAULT_COMPONENTS = {
     "app": COMPONENTS.app,
-    "div": COMPONENTS.frame,
+    "frame": COMPONENTS.frame,
     "label": COMPONENTS.label
 }
 
@@ -17,9 +18,9 @@ class DOM:
     root = {}
     __list_ids:{Element} = {}
     __data:ET.Element = {}
-    __dist = []
+    __dist:Element
     styleSheets:StyleSheets = StyleSheets({})
-    __Components = {}
+    __Components:dict
     __root_engine:tkinter.Tk = None
 
 
@@ -31,6 +32,8 @@ class DOM:
         self.__data = ET.fromstring(data)
         self.__Components = Components
         self.__root_engine = _root
+        self.__dist = []
+        # self.__list_ids = {}
         # self.update()
 
         pass
@@ -47,7 +50,7 @@ class DOM:
 
             raise NameError(f"'{_DATA.tag}' is not a component register")
         
-        NE: Element = NodeComponent(_DATA.attrib, _PARENT, _DOM = self)
+        NE: Element = NodeComponent(_DATA.attrib, _PARENT, _MASTER = self.__root_engine , _DOM = self)
         # NE.tagName = _DATA.tag
         NE.innerText = _DATA.text
         NE.style = parse_class_style(NE.classname,  self.styleSheets)
@@ -58,7 +61,7 @@ class DOM:
         _list =  list(_DATA)
         for child in _list:
             
-            NE_child = self.__compile(child)
+            NE_child = self.__compile(child, _DATA)
             NE.addChild(NE_child)
 
             pass
@@ -81,6 +84,15 @@ class DOM:
 
         return self.__dist
     
+    def render(self, _MASTER:tkinter.Tk = None):
+
+        if _MASTER != None:
+            self.__root_engine = _MASTER
+        
+        self.__dist.render(Vector2(0, 0), Vector2(0, 0))
+        
+
+        pass
     
     
     pass
@@ -111,7 +123,15 @@ class App:
         self.__MASTER = tkinter.Tk()
         
         pass
-    
+
+    def size(self, width = 100, height = 100):
+
+        self.__width = width
+        self.__height = height
+    def position(self, x = 0, y = 0):
+
+        self.__x = x
+        self.__y = y
     def build(self, data, styleSheets:StyleSheets=StyleSheets({}), x=0, y=0, width=100, height=100):
 
         self.__y = y
@@ -132,11 +152,18 @@ class App:
 
         self.__title = title
     
-    def run(self, ):
+    def run(self):
 
+        def run_app(): 
+            self.__MASTER.mainloop()
+
+        self.__MASTER.title(self.__title)
+        self.__MASTER.geometry(f"{self.__width}x{self.__height}")
         
+        self.doc.render()
 
-        self.__MASTER.mainloop()
+        run_app()
+
         pass
 
     pass
