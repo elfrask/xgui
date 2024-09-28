@@ -50,10 +50,11 @@ class DOM:
 
             raise NameError(f"'{_DATA.tag}' is not a component register")
         
-        NE: Element = NodeComponent(_DATA.attrib, _PARENT, _MASTER = self.__root_engine , _DOM = self)
+        NE: Element = NodeComponent(_DATA.attrib, _DATA.text.strip(), _PARENT, self.__root_engine, self)
+        
         # NE.tagName = _DATA.tag
-        NE.innerText = _DATA.text
-        NE.style = parse_class_style(NE.classname,  self.styleSheets)
+        
+        # NE.style = parse_class_style(NE.classname,  self.styleSheets)
 
         if "id" in _DATA.attrib.keys():
             self.__list_ids[_DATA.attrib["id"]] = NE
@@ -61,18 +62,25 @@ class DOM:
         _list =  list(_DATA)
         for child in _list:
             
-            NE_child = self.__compile(child, _DATA)
+            NE_child = self.__compile(child, NE)
             NE.addChild(NE_child)
 
             pass
 
         return NE
 
-    def update(self):
+    def build(self):
 
         self.__list_ids = {}
         
         self.__dist = self.__compile(self.__data)
+
+        pass
+
+    def update(self):
+
+        self.__dist.clean()
+        self.__dist.render(Vector2(0, 0), Vector2(0, 0))
 
         pass
     
@@ -89,6 +97,7 @@ class DOM:
         if _MASTER != None:
             self.__root_engine = _MASTER
         
+        self.__dist.clean()
         self.__dist.render(Vector2(0, 0), Vector2(0, 0))
         
 
@@ -144,7 +153,7 @@ class App:
         self.doc.styleSheets = styleSheets
         self.__styleSheets = styleSheets
 
-        self.doc.update()
+        self.doc.build()
 
         return self.doc
     
@@ -152,6 +161,15 @@ class App:
 
         self.__title = title
     
+    def load(pathXml: io.TextIOWrapper, pathStyle: io.TextIOWrapper, COMPONENTS=DEFAULT_COMPONENTS):
+        _xml = pathXml.read()
+        _style = pathStyle.read()
+        
+        _style_dist = StyleSheets(_style)
+        _app = App(COMPONENTS)
+        _app.build(_xml, _style_dist)
+
+        return _app
     def run(self):
 
         def run_app(): 

@@ -15,6 +15,7 @@ __list_properties = {
     "padding":"padding",
 
     "display":"display",
+    "anchor":"anchor",
 
     # Pack Display Options
     "align":"align",
@@ -43,6 +44,7 @@ class DISPLAYS:
     GRID = "grid"
     NONE = "none"
 
+
 class Style:
 
     CLASSNAME = ""
@@ -53,9 +55,10 @@ class Style:
     position: Vector2 = Vector2()
     margin: Vector2 = Vector2()
     padding: Vector2 = Vector2()
+    anchor: str = tkinter.NE
     # padding: Cross = Cross()
     
-    display: str = "pack"
+    display: str = DISPLAYS.PACK
 
     align:str = tkinter.LEFT
     expand:bool = False
@@ -70,6 +73,7 @@ class Style:
 
     borderColor: rgba = COLORS.BLACK
     borderWidth: int = 0
+    border: str = "flat"
 
 
     def __init__(self, data={}, classname=""):
@@ -98,17 +102,23 @@ class Style:
                 # if type_node in [str, int, float, list, tuple, set, bool, dict]:
                 if type_node == value.__class__:    
                     
+                    # print(self, caption, value)
+
                     setattr(self, caption, value)
+
+                    self.__dict_style[i] = value
 
                     pass
                 elif hasattr(type_node, "parse"):
                     try:
                         
+                        # print(self, caption, value)
+
                         setattr(self, caption, 
                             type_node.parse(value)
                         )
 
-                        self.__dict_style[caption] = value
+                        self.__dict_style[i] = type_node.parse(value)
                     except Exception as err:
                         if show_logs:
                             print(col(f"WARNING: the value of attribute '{i}' of the class '{self.CLASSNAME}' it is not valid", "yellow"))
@@ -182,6 +192,22 @@ class StyleSheets:
                 "pack": DISPLAYS.PACK,
                 "place": DISPLAYS.PLACE,
                 "grid": DISPLAYS.GRID,
+
+                "flat": tkinter.FLAT,
+                "solid": tkinter.SOLID,
+                "sunken": tkinter.SUNKEN,
+                "raised": tkinter.RAISED,
+                "ridge": tkinter.RIDGE,
+                "groove": tkinter.GROOVE,
+
+                "n": tkinter.N,
+                "ne": tkinter.NE,
+                "e": tkinter.E,
+                "se": tkinter.SE,
+                "s": tkinter.S,
+                "sw": tkinter.SW,
+                "w": tkinter.W,
+                "nw": tkinter.NW,
 
 
             })
@@ -272,7 +298,7 @@ class Element:
 
 
 
-    def __init__(self, params:dict={}, parent=None, _MASTER:tkinter.Tk = None, _DOM = None):
+    def __init__(self, params:dict={}, text:str ="", parent=None, _MASTER:tkinter.Tk = None, _DOM = None):
         
         self.params = params
         self.id = params.get("id", None)
@@ -281,15 +307,29 @@ class Element:
         self.MASTER = _MASTER
         self.rootDOM = _DOM
         self.children = []
+        self.parent = parent
+        self.innerText = text
 
+        
         if isinstance(_DOM, DOM):
-            self.style = parse_class_style(self.classname, self.rootDOM.styleSheets)
+            _style = parse_class_style(self.classname, self.rootDOM.styleSheets)
+            self.style = _style
+            # print(self, _style.backgroundColor)
+
 
         # self.children = children
-        self.__ready()
+        self.ready()
 
         pass
-    def __ready(self):
+    def ready(self):
+
+        pass
+    def next(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), _rest = {}):
+
+        for i in self.children:
+
+            child: Element = i
+            child.render(_Position + self.style.position, _Size + self.style.size, **_rest)
 
         pass
     def display(self, _Widget: tkinter.Widget, _Style: Style):
@@ -297,6 +337,8 @@ class Element:
         _display = _Style.display
 
         if _display == DISPLAYS.PACK:
+
+            # print("pack", self.tagName)
 
             _Widget.pack(
                 side=_Style.align,
@@ -309,9 +351,26 @@ class Element:
                 ipadx=_Style.padding.x,
                 ipady=_Style.padding.y,
 
+                anchor=_Style.anchor,
+
+                
+
                 # ipadx=(_Style.padding.right, _Style.padding.left),
                 # ipady=(_Style.padding.top, _Style.padding.bottom)
 
+            )
+
+            pass
+        elif _display == DISPLAYS.PLACE:
+
+            _Widget.place(
+                x=_Style.position.x,
+                y=_Style.position.y,
+
+                anchor=_Style.anchor,
+
+                width=_Style.size.x,
+                height=_Style.size.y,
             )
 
             pass
@@ -329,11 +388,20 @@ class Element:
         self.children.append(child)
     def render(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), **_rest):
 
-        for i in self.children:
+        self.next(_Position, _Size, _rest)
 
-            child: Element = i
-            child.render(_Position + self.style.position, _Size + self.style.size, **_rest)
+        pass
+    def clean(self):
+
+        if self.instance_control != None:
+
+            for i in self.children:
+                i.delete()
+            self.instance_control.destroy()
+            self.instance_control = None
             
+
+            pass
 
         pass
     def __repr__(self) -> str:
@@ -367,20 +435,30 @@ def parse_class_style(class_style: str, _SS:StyleSheets) -> Style:
     _out = Style()
     for i in _class:
         if not i in ["", "\t", "\n", "\r"]:
-            _out.set(_SS.getClass(i).getObject())
 
+            _cache = _SS.getClass(i).getObject()
+            # print(f"{_class}:", _cache)
+            _out.set(_cache, True)
+
+    # print(f"{_class}:", _out.getObject(), _out.backgroundColor)
+    # print(_out.getObject())
     return _out
 
-def get_master(_Element: Element, _Master: tkinter.Tk):
+def get_master(_Element: Element, _Master: tkinter.Tk, _this: Element= None, _log= False):
 
     _out: Element = _Element
+    # print(f"init: get_master({_out})")
 
     while True:
         if _out == None:
+            if _log:
+                print(f"result parent: get_master({_out}) from ({_this})")
             return _Master
 
         if _out.isContainable:
-            return _out
+            if _log:
+                print(f"result parent: get_master({_out}) from ({_this})")
+            return _out.instance_control
         elif not _out.isContainable:
             _out = _out.parent
             continue

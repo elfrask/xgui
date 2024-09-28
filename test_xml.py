@@ -35,12 +35,24 @@
 # _main.exec()
 
 
-import xml.etree.ElementTree as ET
+# import xml.etree.ElementTree as ET
 
-with open("helloworld.xml") as a:
-    _d = a.read()
-    __d = ET.fromstring(_d)
-    print(list(__d))
+# with open("helloworld.xml") as a:
+#     _d = a.read()
+#     __d = ET.fromstring(_d)
+#     print(list(__d))
 
+import tkinter
+from tkinter import(Label, Widget)
 
+root = tkinter.Tk()
+
+label = Label(root, text="Hola mundo")
+label.pack(side="left")
+
+print(isinstance(label, Widget))
+
+root.geometry("100x100")
+root.title("Hola mundo")
+root.mainloop()
 
