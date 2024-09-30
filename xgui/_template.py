@@ -29,9 +29,11 @@ __list_properties = {
     "fontFamily": "font-family",
     "fontSize": "font-size",
     "fontColor": "font-color",
-    
+    "justify": "justify",
+
     "borderColor":"border-color",
     "borderWidth":"border-width",
+
     
     # "hAlign":"h-align",
     
@@ -70,6 +72,7 @@ class Style:
     fontFamily: str = "Arial"
     fontSize: int = 12
     fontColor: rgba = COLORS.BLACK
+    justify: str = tkinter.LEFT
 
     borderColor: rgba = COLORS.BLACK
     borderWidth: int = 0
@@ -271,8 +274,8 @@ class Event:
 
         return _bind
     
-    onClick = __gen_add("click")
-    onChange = __gen_add("change")
+    callClick = __gen_add("click")
+    callChange = __gen_add("change")
 
     pass
 
@@ -309,18 +312,29 @@ class Element:
         self.children = []
         self.parent = parent
         self.innerText = text
+        self.events = Event(self)
+        self.style = Style({})
+        self.style = self.StyleFromParams()
 
         
-        if isinstance(_DOM, DOM):
-            _style = parse_class_style(self.classname, self.rootDOM.styleSheets)
-            self.style = _style
+        
             # print(self, _style.backgroundColor)
 
 
         # self.children = children
+        # self.styleRestart()
         self.ready()
 
         pass
+    def StyleFromParams(self):
+
+        if isinstance(self.rootDOM, DOM):
+            _style = parse_class_style(self.classname, self.rootDOM.styleSheets)
+            # self.style = _style
+        else:
+            _style = self.style
+
+        return _style
     def ready(self):
 
         pass
@@ -396,7 +410,7 @@ class Element:
         if self.instance_control != None:
 
             for i in self.children:
-                i.delete()
+                i.clean()
             self.instance_control.destroy()
             self.instance_control = None
             

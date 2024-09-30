@@ -10,7 +10,9 @@ from ._class import (Vector2)
 DEFAULT_COMPONENTS = {
     "app": COMPONENTS.app,
     "frame": COMPONENTS.frame,
-    "label": COMPONENTS.label
+    "label": COMPONENTS.label,
+    "button":COMPONENTS.button,
+    "prompt": COMPONENTS.prompt,
 }
 
 class DOM:
@@ -49,6 +51,9 @@ class DOM:
         if NodeComponent == None:
 
             raise NameError(f"'{_DATA.tag}' is not a component register")
+        
+        if _DATA.text == None:
+            _DATA.text = ""
         
         NE: Element = NodeComponent(_DATA.attrib, _DATA.text.strip(), _PARENT, self.__root_engine, self)
         

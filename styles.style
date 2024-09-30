@@ -12,10 +12,19 @@
             200
         )
     },
+    "orden": {
+        "align":"top",
+        "fill":x
+    },
     "font": {
         "font-family":"Arial",
         "font-size": 20,
         "font-color": red,
+        "justify": left
         
+    },
+    "input": {
+        "border":sunken,
+        "border-width": 1
     }
 }

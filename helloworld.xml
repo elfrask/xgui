@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
 <app type="xgui" class="app">
     <frame class="box">
-        <label class="font" id="text">
+        <label id="text" class="orden font">
             Hello World!
         </label>
+        <button id="btn" class="orden">
+            clickeame!
+        </button>
+        <prompt id="input" class="orden input" value="texto"/>
     </frame>
 </app>
