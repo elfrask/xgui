@@ -219,6 +219,21 @@ class COLORS:
     BLACK = rgba(0, 0, 0, 1)
     WHITE = rgba(255, 255, 255, 1)
     GRAY = rgba(130, 130, 130, 1)
+    GRAY0 = rgba(240, 240, 240, 1)
+    GRAY1 = rgba(222, 222, 222, 1)
+    GRAY2 = rgba(199, 199, 199, 1)
+    GRAY3 = rgba(181, 181, 181, 1)
+    GRAY4 = rgba(163, 163, 163, 1)
+    GRAY5 = rgba(140, 140, 140, 1)
+    GRAY6 = rgba(120, 120, 120, 1)
+    GRAY7 = rgba(101, 101, 101, 1)
+
+    GRAY8 = rgba(86, 86, 86, 1)
+    GRAY9 = rgba(68, 68, 68, 1)
+    GRAY10 = rgba(57, 57, 57, 1)
+    GRAY11 = rgba(40, 40, 40, 1)
+    GRAY12 = rgba(25, 25, 25, 1)
+    GRAY13 = rgba(17, 17, 17, 1)
 
 
     pass

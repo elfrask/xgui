@@ -1,4 +1,4 @@
-from ._class import Vector2
+from ._class import Vector2, COLORS, rgba
 import tkinter
 from ._template import (Element, parse_class_style, get_master, Style)
 import debugpy
@@ -167,6 +167,11 @@ class button(Element):
 
     tagName= "button"
     text = ""
+    defaultElementStyle = {
+        "border":"raised",
+        "border-width": 3,
+        "background-color": COLORS.GRAY1
+    }
 
     # def __init__(self, params: dict = ..., parent=None, _MASTER: tkinter.Tk = None, _DOM=None):
     #     super().__init__(params, parent, _MASTER, _DOM)
@@ -213,20 +218,28 @@ class prompt(Element):
 
     tagName= "prompt"
     value = ""
+    defaultElementStyle = {
+        "border":"sunken",
+        "border-width": 3
+    }
 
     # def __init__(self, params: dict = ..., parent=None, _MASTER: tkinter.Tk = None, _DOM=None):
     #     super().__init__(params, parent, _MASTER, _DOM)
     def ready(self):
 
-        # print("_ready")
-
+        # print("prompt:", self.style.border)
+        
         self.value = self.params.get("value", "")
 
 
     def render(self, _Position: Vector2 = Vector2(), _Size: Vector2 = Vector2(), **_rest):
 
-        _st = self.StyleFromParams()
+        # _st = self.StyleFromParams()
+        _st = self.style
         _P = get_master(self.parent, self.MASTER, self)
+
+        # print(_st.getObject())
+
         _ENTRY = tkinter.Entry(_P, 
             
             **default_params_for_box(_st, ["height"]),
@@ -244,7 +257,6 @@ class prompt(Element):
         _ENTRY.bind("<KeyRelease>", lambda x: setattr(self, "value", _ENTRY.get()))
         _ENTRY.insert(0, self.value)
         
-        # print(_st.getObject())
         # print(self.text)
 
         

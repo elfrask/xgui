@@ -142,6 +142,23 @@ class Style:
 
 
         pass
+    def __add__(self, _style):
+
+        _out: Style = Style()
+        
+        _v1 = self.getObject()
+        _v2 = _style.getObject()
+
+        _out.set(_v1)
+        _out.set(_v2)
+        
+        return _out
+    def setFromStyle(self, _style):
+        _st: Style = _style
+        
+        self.set(_st.getObject())
+
+        return
     def __repr__(self) -> str:
 
 
@@ -297,6 +314,7 @@ class Element:
     classname = ""
     isContainable:bool = False
     instance_control: tkinter.Widget = None
+    defaultElementStyle:dict = {}
     MASTER: tkinter.Tk = None
 
 
@@ -314,7 +332,8 @@ class Element:
         self.innerText = text
         self.events = Event(self)
         self.style = Style({})
-        self.style = self.StyleFromParams()
+        self.style.set(self.defaultElementStyle)
+        self.StyleFromParams(True)
 
         
         
@@ -326,11 +345,13 @@ class Element:
         self.ready()
 
         pass
-    def StyleFromParams(self):
+    def StyleFromParams(self, _generate_and_set = False):
 
         if isinstance(self.rootDOM, DOM):
             _style = parse_class_style(self.classname, self.rootDOM.styleSheets)
-            # self.style = _style
+            if _generate_and_set:
+                self.style.setFromStyle(_style)
+                # print("estilado")
         else:
             _style = self.style
 

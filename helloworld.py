@@ -11,10 +11,15 @@ _input:prompt = app.doc.getById("input")
 @btn.events.bind("click")
 def click():
     print("clickeado!")
+    
+    i = input("texto:")
+    _input.value = i
+
     app.doc.update()
 
 @_input.events.bind("change")
 def on_change():
     print("Cambio!")
+
 
 app.run()
