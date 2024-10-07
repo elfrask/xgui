@@ -243,7 +243,7 @@ class StyleSheets:
 
     def getClass(self, classname:str) -> Style:
 
-        return self.classTags.get(classname, {})
+        return self.classTags.get(classname, Style({}))
 
     def __repr__(self) -> str:
 

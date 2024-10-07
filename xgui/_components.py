@@ -220,7 +220,8 @@ class prompt(Element):
     value = ""
     defaultElementStyle = {
         "border":"sunken",
-        "border-width": 3
+        "border-width": 3,
+        "size": Vector2(10, 0)
     }
 
     # def __init__(self, params: dict = ..., parent=None, _MASTER: tkinter.Tk = None, _DOM=None):

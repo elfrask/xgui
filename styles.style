@@ -1,30 +1,27 @@
 {
-    "app": {
-        "background-color": red,
+    "place": {
+       "display": place
     },
-    "box": {
-        "display": pack,
-        "align": left,
-        "fill": y,
-        "background-color": rgba(20, 40, 40),
-        "size": Vector2(
-            200,
-            200
-        )
+    "text": {
+        "size": Vector2(200, 30),
+        "align": right
     },
-    "orden": {
-        "align":"top",
-        "fill":x
+    "n1": {
+        "position": Vector2(250, 20),
     },
-    "font": {
-        "font-family":"Arial",
-        "font-size": 20,
-        "font-color": red,
-        "justify": left
-        
+    "n2": {
+        "position": Vector2(250, 60),
     },
-    "input": {
-        "border":sunken,
-        "border-width": 1
-    }
+    "btn-contain": {
+        "size": Vector2(200, 30),
+        "position": Vector2(250, 100),
+        # "background-color": red
+    },
+
+    "n3": {
+        "size": Vector2(200, 30),
+        "position": Vector2(250, 140),
+    },
+    
+
 }

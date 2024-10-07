@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<app type="xgui" class="app">
+<app type="xgui-app" class="app">
     <frame class="box">
         <label id="text" class="orden font">
             Hello World!

@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<app type="xgui-app" class="place app">
+    <prompt id="n1" value="0" class="place text n1" />
+    <prompt id="n2" value="0" class="place text n2" />
+    <frame class="place btn-contain">
+        <button id="suma" class="btn">
+            Sumar
+        </button>
+    </frame>
+    <label id="total" class="place n3">
+        Total: 0
+    </label>
+</app>

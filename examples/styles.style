@@ -1,0 +1,30 @@
+{
+    "app": {
+        "background-color": red,
+    },
+    "box": {
+        "display": pack,
+        "align": left,
+        "fill": y,
+        "background-color": rgba(20, 40, 40),
+        "size": Vector2(
+            200,
+            200
+        )
+    },
+    "orden": {
+        "align":"top",
+        "fill":x
+    },
+    "font": {
+        "font-family":"Arial",
+        "font-size": 20,
+        "font-color": red,
+        "justify": left
+        
+    },
+    "input": {
+        "border":sunken,
+        "border-width": 1
+    }
+}
