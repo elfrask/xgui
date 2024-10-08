@@ -11,7 +11,7 @@ error_text = "Valores ingresados no valido"
 total_text = "Total: {T}"
 
 def check(_n1:str, _n2:str):
-    return _n1.isnumeric() and _n2.isnumeric()
+    return (_n1.isnumeric() or _n1.isdecimal()) and (_n2.isnumeric() or _n2.isdecimal())
 
 @suma.events.bind("click")
 def _sumar():
@@ -19,7 +19,7 @@ def _sumar():
     n_n2 = n2.value
 
     if check(n_n1, n_n2):
-        total.text = total_text.replace("{T}", str(int(n_n1) + int(n_n2)) )
+        total.text = total_text.replace("{T}", str(float(n_n1) + float(n_n2)) )
     else:
         total.text = error_text
 
